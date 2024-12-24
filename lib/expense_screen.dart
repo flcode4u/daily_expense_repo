@@ -15,6 +15,7 @@ class _ExpenseScreenState extends State<ExpenseScreen> {
   DateTime _startDate = DateTime.now().subtract(Duration(days: 30));
   DateTime _endDate = DateTime.now();
   final DateFormat _dateFormat = DateFormat('dd MMM yyyy');
+  final NumberFormat _currencyFormat = NumberFormat.currency(symbol: 'Rs.', decimalDigits: 2);
 
   Future<void> _selectStartDate(BuildContext context) async {
     final DateTime? picked = await showDatePicker(
@@ -97,7 +98,7 @@ class _ExpenseScreenState extends State<ExpenseScreen> {
                 return Column(
                   children: [
                     Text(
-                      'Total Expenses: Rs ${totalExpenses.toStringAsFixed(2)}',
+                      'Total Expenses: ${_currencyFormat.format(totalExpenses)}',
                       style: TextStyle(fontSize: 20),
                     ),
                     Expanded(
@@ -107,7 +108,7 @@ class _ExpenseScreenState extends State<ExpenseScreen> {
                           final expense = filteredExpenses[index];
                           return ListTile(
                             title: Text(expense.name),
-                            subtitle: Text('Rs ${expense.amount.toStringAsFixed(2)} - ${_dateFormat.format(expense.date)}'),
+                            subtitle: Text('${_currencyFormat.format(expense.amount)} - ${_dateFormat.format(expense.date)}'),
                             trailing: Row(
                               mainAxisSize: MainAxisSize.min,
                               children: [

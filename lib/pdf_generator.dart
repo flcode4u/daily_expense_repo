@@ -8,6 +8,7 @@ import 'package:intl/intl.dart';
 Future<void> generatePdfReport(List<Expense> expenses, DateTime startDate, DateTime endDate) async {
   final pdf = pw.Document();
   final DateFormat dateFormat = DateFormat('dd MMM yyyy');
+  final NumberFormat currencyFormat = NumberFormat.currency(symbol: 'Rs.', decimalDigits: 2);
 
   pdf.addPage(
     pw.Page(
@@ -25,7 +26,7 @@ Future<void> generatePdfReport(List<Expense> expenses, DateTime startDate, DateT
               data: <List<String>>[
                 <String>['Name', 'Amount (Rs)', 'Date'],
                 ...expenses.map((expense) =>
-                    [expense.name, 'Rs ${expense.amount.toStringAsFixed(2)}', dateFormat.format(expense.date)]),
+                    [expense.name, currencyFormat.format(expense.amount), dateFormat.format(expense.date)]),
               ],
             ),
           ],
