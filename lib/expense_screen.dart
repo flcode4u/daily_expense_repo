@@ -90,7 +90,7 @@ class _ExpenseScreenState extends State<ExpenseScreen> {
             child: Consumer<ExpenseData>(
               builder: (context, expenseData, child) {
                 final filteredExpenses = expenseData.expenses.where((expense) {
-                  return expense.date.isAfter(_startDate) && expense.date.isBefore(_endDate.add(Duration(days: 1)));
+                  return expense.date.isAfter(_startDate.add(Duration(days: -1))) && expense.date.isBefore(_endDate.add(Duration(days: 1)));
                 }).toList();
 
                 final totalExpenses = filteredExpenses.fold(0.0, (sum, item) => sum + item.amount);

@@ -15,6 +15,8 @@ bool FlutterWindow::OnCreate() {
   }
 
   RECT frame = GetClientArea();
+  //SetWindowText(window_handle(), L"My Expense Tracker");
+
 
   // The size here must match the window dimensions to avoid unnecessary surface
   // creation / destruction in the startup path.
