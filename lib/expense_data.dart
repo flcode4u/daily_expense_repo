@@ -18,6 +18,20 @@ class Expense {
       'date': date.toIso8601String(),
     };
   }
+
+  Expense copyWith({
+    int? id,
+    String? name,
+    double? amount,
+    DateTime? date,
+  }) {
+    return Expense(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      amount: amount ?? this.amount,
+      date: date ?? this.date,
+    );
+  }
 }
 
 class ExpenseData extends ChangeNotifier {
@@ -39,14 +53,38 @@ class ExpenseData extends ChangeNotifier {
     loadExpenses();
   }
 
-  Future<void> addExpense(String name, double amount) async {
-    final newExpense = Expense(name: name, amount: amount, date: DateTime.now());
-    await _database.insert(
+  Future<void> addExpense(String name, double amount, DateTime date) async {
+    final newExpense = Expense(name: name, amount: amount, date: date);
+    final id = await _database.insert(
       'expenses',
       newExpense.toMap(),
       conflictAlgorithm: ConflictAlgorithm.replace,
     );
-    _expenses.add(newExpense);
+    _expenses.add(newExpense.copyWith(id: id));
+    notifyListeners();
+  }
+
+  Future<void> updateExpense(Expense expense) async {
+    await _database.update(
+      'expenses',
+      expense.toMap(),
+      where: 'id = ?',
+      whereArgs: [expense.id],
+    );
+    final index = _expenses.indexWhere((e) => e.id == expense.id);
+    if (index != -1) {
+      _expenses[index] = expense;
+      notifyListeners();
+    }
+  }
+
+  Future<void> deleteExpense(int id) async {
+    await _database.delete(
+      'expenses',
+      where: 'id = ?',
+      whereArgs: [id],
+    );
+    _expenses.removeWhere((expense) => expense.id == id);
     notifyListeners();
   }
 
@@ -61,5 +99,15 @@ class ExpenseData extends ChangeNotifier {
       );
     });
     notifyListeners();
+  }
+
+  double getTotalExpensesByMonth(int month, int year) {
+    double total = 0;
+    for (var expense in _expenses) {
+      if (expense.date.month == month && expense.date.year == year) {
+        total += expense.amount;
+      }
+    }
+    return total;
   }
 }
